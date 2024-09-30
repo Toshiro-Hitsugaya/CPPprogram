@@ -1,3 +1,8 @@
+#define CELL_SIZE_0 60
+#define ROW_0 6
+#define COLUMN_0 10
+
+
 #define LEVEL_0 0
 #define LEVEL_1 1
 
