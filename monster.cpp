@@ -1,5 +1,5 @@
-#include "monster.h"
-
+#include "Monster.h"
+#include <iostream>
 Monster::Monster(int hp, int speed, int gold, QObject *parent)
     : QObject(parent), HP(hp), speed(speed), gold_getted(gold), x(80), y(0), direction(0), moveStep(0) {
     monster_Image.load(":/res_of_qt/monster.jpg"); // 怪的图片
@@ -12,54 +12,25 @@ Monster::Monster(int hp, int speed, int gold, QObject *parent)
 
 Monster::~Monster() {
     delete movement_Timer;
+    std::cout<<"DELETED!";
 }
 
 // move自定义的，按需求改路径，下面写的都是根据那个地图调试的
 void Monster::move() {
-    // switch (direction) {
-    // case 0:
-    //     if (moveStep < 190) {
-    //         positionY += speed;
-    //         moveStep += speed;
-    //     } else {
-    //         direction = 1;
-    //         moveStep = 0;
-    //     }
-    //     break;
-    // case 1:
-    //     if (moveStep < 170) {
-    //         positionX += speed;
-    //         moveStep += speed;
-    //     } else {
-    //         direction = 2;
-    //         moveStep = 0;
-    //     }
-    //     break;
-    // case 2:
-    //     if (moveStep < 50) {
-    //         positionY -= speed;
-    //         moveStep += speed;
-    //     } else {
-    //         direction = 0;
-    //         moveStep = 0;
-    //     }
-    //     break;
-    // }
-
     if (moveStep < 190) {
         y += speed;
         moveStep += speed;
-        takeDamage(1);
+        //takeDamage(1);
     }
     else if (moveStep >= 190 && moveStep < 360){
         x += speed;
         moveStep += speed;
-        takeDamage(0.7);
+        //takeDamage(0.7);
     }
     else if (moveStep >= 360 && moveStep < 420){
         y -= speed;
         moveStep += speed;
-        takeDamage(3);
+        //takeDamage(3);
     }
     else if (moveStep >= 420 && moveStep < 750){
         x +=speed;
@@ -100,16 +71,22 @@ void Monster::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
         painter->drawPixmap(drawRect, monster_Image.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     //画血条
-    if (HP > 40)
+    if (HP > 400)
         painter->setBrush(Qt::green);
     else
         painter->setBrush(Qt::red);
-    painter->drawRect(rect().x(), rect().y() - 2, rect().width() * (HP / 100.0), 5);
+
+    painter->drawRect(rect().x(), rect().y() - 2, rect().width() * (HP / 1000.0), 5);
 }
 
 void Monster::checkDeath() {
-    if (isDead()) {
+    if (isDead())
         emit monsterKilled(gold_getted); // 发加金币信号
-        delete this;
-    }
+}
+
+double Monster::get_x(){
+    return x+15;
+}
+double Monster::get_y(){
+    return y+30;
 }
