@@ -43,11 +43,8 @@ protected:
     };
 
     QVector<BulletStr*> BulletVec;  //子弹数组
-
     int attackInterval;             //统计攻击间隔
-
     int upgradeValue = 300;         //防御塔升级成本
-
     int counter = 2;                //计数器
 
 public:

@@ -14,7 +14,6 @@ public:
         return QRectF(0, 0, 650, 350); // 全屏
     }
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-
     int type() const override {
         // 返回图形项的类型，需要是一个唯一的整数值
         return UserType + 1;

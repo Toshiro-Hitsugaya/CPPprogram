@@ -4,11 +4,10 @@ tower1::tower1(const int x, const int y) : towerBase(x, y)
 {
     tower1_Image.load(":/res_of_qt/crystal.png");
     width = 110, height = 80;   //防御塔宽高
-    picturePath = ":/res/star.png";    //防御塔图片路径
+    // picturePath = ":/res/star.png";    //防御塔图片路径
     range = 100;        //攻击范围
-    attackPower = 30;             //攻击力
-    value = 200;
-
+    attackPower = 20;             //攻击力
+    value = 25;
     attackInterval = 3; //攻击间隔
 }
 
@@ -16,7 +15,6 @@ void tower1::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     // 绘制图形项
     Q_UNUSED(option);
     Q_UNUSED(widget);
-
     QSize targetSize(50, 70); // 目标宽度和高度
     // 使用 scaled() 方法调整图像大小
     QPixmap scaledImage = tower1_Image.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -25,6 +23,7 @@ void tower1::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     painter->drawPixmap(targetRect, scaledImage);
 }
 
+// 补充，原本的被我注释了，这个全部攻击，用于调试
 void tower1::Attack(QVector<Monster*>& enemyVec)
 {
     for (auto enemyIt = enemyVec.begin(); enemyIt != enemyVec.end(); ++enemyIt) {

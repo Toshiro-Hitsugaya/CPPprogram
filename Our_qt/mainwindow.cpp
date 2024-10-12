@@ -9,7 +9,7 @@
 #include "tower1.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), scene(new QGraphicsScene(this)), spawnTimer(new QTimer(this)),goldCount(0) {
+    : QMainWindow(parent), scene(new QGraphicsScene(this)), spawnTimer(new QTimer(this)),goldCount(50) {
     setupScene(); // 设置场景
 
     // 出怪时间，设置定时器每两秒发射一次信号
@@ -21,7 +21,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() {
     delete scene;
-    delete spawnTimer;
+    delete spawnTimer;   
+    for (auto i:towers){
+        delete i;
+    }
 }
 
 void MainWindow::setupScene() {
@@ -42,18 +45,6 @@ void MainWindow::setupScene() {
     backgroundItem->setZValue(-1); // 防止覆盖
     scene->addItem(backgroundItem);
 
-    // 画3个图片, 只是放图，没有相应的功能
-    // QPixmap Tower(":/res_of_qt/crystal.png");
-    // QPixmap Tower_new = Tower.scaled(50, 50);
-    // QGraphicsPixmapItem *TowerItem = new QGraphicsPixmapItem(Tower_new);
-    // QGraphicsPixmapItem *TowerItem2 = new QGraphicsPixmapItem(Tower_new);
-    // TowerItem -> setPos(128, 112);
-    // TowerItem -> setZValue(0);
-    // TowerItem2 -> setPos(185, 112);
-    // TowerItem2 -> setZValue(0);
-    // scene->addItem(TowerItem);
-    // scene->addItem(TowerItem2);
-
     // QPixmap Tower3(":/res_of_qt/star.png");
     // QPixmap Tower_new3 = Tower3.scaled(50, 50);
     // QGraphicsPixmapItem *TowerItem3 = new QGraphicsPixmapItem(Tower_new3);
@@ -73,6 +64,11 @@ void MainWindow::spawnMonster() {
     // 血量，速度，金币
     Monster *monster = new Monster(100.0, 5, 10);
 
+    // // 处理走到边界外的怪物
+    // if (monster->get_x() == 650){
+    //     removeMonster(monster);
+    // }
+
     //这里接到信号了
     connect(monster, &Monster::monsterKilled, this, [this, monster](int gold) {
         goldCount += gold; // 增加金币数
@@ -87,13 +83,26 @@ void MainWindow::spawnMonster() {
 bool MainWindow::canPlaceTower(int x, int y) {
     // 在此检查点击的点是否合适放置塔
     // 例如，可以通过坐标检查是否与其他塔重叠，或者是否在道路上
+    // 对塔的坐标约束都可以补充在这里
+    for(auto tower: towers){
+        int towerX = tower->getCoor().x;
+        int towerY = tower->getCoor().y;
+        if (x >= towerX - 40 && x <= towerX + 40 && y <= towerY + 40 && y >= towerY - 40){
+            return false;
+        }
+    }
     return true;
 }
 
+// 金币限制放置
 void MainWindow::placeTower(int x, int y) {
     tower1* newTower = new tower1(x, y);
-    towers.append(newTower); // 将塔添加到列表中
-    scene->addItem(newTower);
+    if (goldCount >= newTower->getValue()){
+        towers.append(newTower); // 将塔添加到列表中
+        goldCount -= newTower->getValue();
+        goldLabel->setText("金币: " + QString::number(goldCount)); // 更新显示
+        scene->addItem(newTower);
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
@@ -112,21 +121,10 @@ void MainWindow::startTowerAttack() {
     connect(attackTimer, &QTimer::timeout, this, [this]() {
         for (tower1* tower : towers) {
             QVector<Monster*> monstersInRange = getMonstersInRange(tower);
-            for (Monster* monsteri:monstersInRange){
-                monsteri->takeDamage(10); // 仅调试，换为tower->Attack(monstersInRange); // 让塔攻击范围内的怪物
-            }
+            tower->Attack(monstersInRange);
         }
     });
     attackTimer->start(1000); // 每秒攻击一次
-}
-
-// 使用Attack
-void MainWindow::towerAttack() {
-    // for (tower1* tower : towers) {
-    //     for (Monster* m : allMonsters) {
-    //         m->takeDamage(10);
-    //     }
-    // }
 }
 
 QVector<Monster*> MainWindow::getMonstersInRange(tower1* tower) {
@@ -146,7 +144,7 @@ bool MainWindow::isInRange(tower1* tower, Monster* monster) {
     int monsterX = monster->get_x();
     int monsterY = monster->get_y();
 
-    // 计算塔和怪物之间的距离（使用欧几里得距离公式）
+    // 计算塔和怪物之间的距离
     int deltaX = towerX - monsterX;
     int deltaY = towerY - monsterY;
     double distance = sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -160,18 +158,3 @@ void MainWindow::removeMonster(Monster* monster) {
     allMonsters.removeOne(monster); // 从怪物列表中移除
     scene->removeItem(monster); // 从场景中移除
 }
-
-// void MainWindow::paintEvent(QPaintEvent *event) {
-//     QMainWindow::paintEvent(event);
-//     QPainter painter(this);
-//     QPixmap background(":/res_of_qt/background1.png");
-//     painter.drawPixmap(0, 0, width(), height(), background);
-// }
-
-// void MainWindow::paintEvent(QPaintEvent*)
-// {
-//     QPainter painter(this);
-//     QPixmap pix;
-//     pix.load(":/res_of_qt/background1.png");
-//     painter.drawPixmap(0, 0, this->width(), this->height(), pix);
-// }

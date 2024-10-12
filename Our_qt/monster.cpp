@@ -20,36 +20,6 @@ Monster::~Monster() {
 
 // move自定义的，按需求改路径，下面写的都是根据那个地图调试的
 void Monster::move() {
-    // switch (direction) {
-    // case 0:
-    //     if (moveStep < 190) {
-    //         positionY += speed;
-    //         moveStep += speed;
-    //     } else {
-    //         direction = 1;
-    //         moveStep = 0;
-    //     }
-    //     break;
-    // case 1:
-    //     if (moveStep < 170) {
-    //         positionX += speed;
-    //         moveStep += speed;
-    //     } else {
-    //         direction = 2;
-    //         moveStep = 0;
-    //     }
-    //     break;
-    // case 2:
-    //     if (moveStep < 50) {
-    //         positionY -= speed;
-    //         moveStep += speed;
-    //     } else {
-    //         direction = 0;
-    //         moveStep = 0;
-    //     }
-    //     break;
-    // }
-
     if (moveStep < 150 + 30) {
         y += speed;
         moveStep += speed;
@@ -71,7 +41,7 @@ void Monster::move() {
         moveStep += speed;
     }
     else if (moveStep >= 748 +30){
-        x +=speed;
+        delete this; // 这里delete掉
     }
     update();
 }
@@ -95,25 +65,19 @@ void Monster::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     // QRect drawRect = rect().toRect(); // 将 QRectF 转换为 QRect
     // QSize size = drawRect.size(); // 获取 QRect 的大小
-
     // 绘制怪物图像
     if (HP > 0){
         // 设置目标大小 50*70好像挺不错，记得改update
         QSize targetSize(50, 70); // 目标宽度和高度
-
         // // 使用 scaled() 方法调整图像大小
         // QPixmap scaledImage = monster_Image.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
         // // 绘制调整大小后的图像
         // QRect targetRect(x, y, scaledImage.width(), scaledImage.height());
         // painter->drawPixmap(targetRect, scaledImage);
-
         QImage currentFrame = movie->currentImage().scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation); // 使用当前帧
-
         QRect targetRect(x, y, currentFrame.width(), currentFrame.height());
         painter->drawImage(targetRect, currentFrame); // 使用 drawImage 绘制
     }
-
     //画血条
     if (HP > 40)
         painter->setBrush(Qt::green);

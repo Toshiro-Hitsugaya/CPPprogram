@@ -18,19 +18,16 @@ public:
     MainWindow(QWidget *parent = nullptr); // 构造
     ~MainWindow(); // 析构
     void spawnMonster(); // 出怪点
-    void removeMonster(Monster* monster);
+    void removeMonster(Monster* monster); // 主要是为了移除出怪物列表
 
-    bool canPlaceTower(int x, int y);
-    void placeTower(int x, int y);
-    void startTowerAttack();
-    void towerAttack();
-    QVector<Monster*> getMonstersInRange(tower1* tower);
-    bool isInRange(tower1* tower, Monster* monster);
-
+    bool canPlaceTower(int x, int y); // 判断是否可以放置塔
+    void placeTower(int x, int y); // 放置塔
+    void startTowerAttack(); // 开始塔的攻击
+    QVector<Monster*> getMonstersInRange(tower1* tower); // 获取塔攻击范围内的怪物
+    bool isInRange(tower1* tower, Monster* monster); // 判断怪处在塔的范围
 
 protected:
-    // void paintEvent(QPaintEvent *event) override; // 本来想画背景图的，不用了
-    void mousePressEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;  // 鼠标事件
 
 private:
     QGraphicsScene *scene;
