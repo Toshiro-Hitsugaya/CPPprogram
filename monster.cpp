@@ -1,7 +1,7 @@
 #include "Monster.h"
-#include <iostream>
-Monster::Monster(int hp, int speed, int gold, QObject *parent)
-    : QObject(parent), HP(hp), speed(speed), gold_getted(gold), x(80), y(0), direction(0), moveStep(0) {
+#include "qgraphicsscene.h"
+Monster::Monster(int hp, int speed, int gold, QGraphicsScene* scene, QList<Monster*>& monsters): HP(hp), speed(speed), x(80), y(0), direction(0), gold_getted(gold), moveStep(0), scene(scene), monsters(monsters){
+
     monster_Image.load(":/res_of_qt/monster.jpg"); // 怪的图片
 
     // 行走计时器
@@ -12,7 +12,7 @@ Monster::Monster(int hp, int speed, int gold, QObject *parent)
 
 Monster::~Monster() {
     delete movement_Timer;
-    std::cout<<"DELETED!";
+    qDebug()<<"DELETED!";
 }
 
 // move自定义的，按需求改路径，下面写的都是根据那个地图调试的
@@ -47,8 +47,17 @@ void Monster::move() {
 }
 
 void Monster::takeDamage(double damage) {
-    HP -= damage;
-    checkDeath();
+    if(HP>0.0){
+        HP -= damage;
+        checkDeath();
+    }
+}
+void Monster::takeDeceleration(double deceletation){
+    speed=-deceletation;
+    if(speed<MIN_SPEED_0)
+        speed=MIN_SPEED_0;
+    if(deceletation==0.0)
+        speed=SPEED_0;
 }
 
 bool Monster::isDead() const {
@@ -76,17 +85,25 @@ void Monster::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     else
         painter->setBrush(Qt::red);
 
-    painter->drawRect(rect().x(), rect().y() - 2, rect().width() * (HP / 1000.0), 5);
+    if(HP > 0){
+       painter->drawRect(rect().x(), rect().y() - 2, rect().width() * (HP / 1000.0), 5);
+    }
+
 }
 
 void Monster::checkDeath() {
-    if (isDead())
-        emit monsterKilled(gold_getted); // 发加金币信号
+    if (isDead()){
+        goldCount+=gold_getted;
+        //emit monsterKilled(gold_getted);
+        scene->removeItem(this);
+        this->deleteLater();
+        monsters.removeOne(this);
+    }
 }
 
 double Monster::get_x(){
-    return x+15;
+    return x+MONSTER_WIDTH/ 2;
 }
 double Monster::get_y(){
-    return y+30;
+    return y+MONSTER_HEIGHT/ 2;
 }

@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res_of_qt/background1.png</file>
+        <file>res_of_qt/monster.jpg</file>
+        <file>res_of_qt/crystal.png</file>
+        <file>res_of_qt/circle_fire.jpg</file>
+        <file>res_of_qt/circle_ice_0.jpg</file>
+        <file>res_of_qt/circle_ice_1.jpg</file>
+        <file>res_of_qt/circle_ice_2.jpg</file>
+        <file>res_of_qt/circle_ice_3.jpg</file>
+    </qresource>
+</RCC>

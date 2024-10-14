@@ -1,19 +1,20 @@
+#ifndef CIRCLE_H
+#define CIRCLE_H
 #include <def.h>
-#include <monster.h>
-#include <QPainter>
 #include <QGraphicsItem>
-#include <QPixmap>
 #include <QGraphicsScene>
+#include <monster.h>
 
-class circle:public QObject
+class circle:public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 private:
     Coor center;
     double duration;
     double R;
-    QPixmap CircleImage; // 圈图像
-    QGraphicsPixmapItem* graphicsItem; // 图像项
+    QPixmap CircleImage; // 图像
+    QList<Monster*> &monsters;
+    QGraphicsScene* SCENE;
 
     bool fire;
     double fire_dps;
@@ -23,10 +24,12 @@ private:
 
 
 public:
-    circle(double x, double y, int type, QList<Monster*> &monsters, const QPixmap& image, QGraphicsScene* scene);
+    circle(double x, double y, int type, QList<Monster*> &monsters, QGraphicsScene* scene);
     bool isIn(double x, double y);
-    void start_duration(QList<Monster*> &monsters);
+    void start_duration();
     void fire_attack(Monster* M);
+    void decelerate(Monster* M);
     ~circle();
 };
+#endif
 
