@@ -15,10 +15,10 @@ class Monster : public QObject, public QGraphicsRectItem {
 public:
     // 血条，速度，金币
     Monster(double hp, int speed, int gold, QObject *parent = nullptr);
-    ~Monster();
+    virtual ~Monster();
 
-    void move();
-    void takeDamage(double damage); // 受伤
+    virtual void move();
+    virtual void takeDamage(double damage); // 受伤
     bool isDead() const;
     void update(); // 更新位置
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -43,11 +43,12 @@ protected:
     int gold_getted;
     int moveStep;
     QTimer *movement_Timer; // 出怪间隔
+    QMovie *movie; // 添加一个 QMovie 对象
+    QMovie *movie2;
+    QPixmap monster_Image; // 添加怪物图像成员
 
 private:
     void checkDeath();
-    QPixmap monster_Image; // 添加怪物图像成员
-    QMovie *movie; // 添加一个 QMovie 对象
 };
 
 #endif // MONSTER_H

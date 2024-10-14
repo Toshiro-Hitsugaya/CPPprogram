@@ -6,8 +6,8 @@ tower1::tower1(const int x, const int y) : towerBase(x, y)
     width = 110, height = 80;   //防御塔宽高
     // picturePath = ":/res/star.png";    //防御塔图片路径
     range = 100;        //攻击范围
-    attackPower = 20;             //攻击力
-    value = 25;
+    attackPower = 15;             //攻击力
+    value = 15;
     attackInterval = 3; //攻击间隔
 }
 

@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QDebug>
 #include "tower1.h"
+#include "rampagemonster.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), scene(new QGraphicsScene(this)), spawnTimer(new QTimer(this)),goldCount(50) {
@@ -61,21 +62,24 @@ void MainWindow::setupScene() {
 }
 
 void MainWindow::spawnMonster() {
+    // 创建不同类型的怪物
+    Monster *rampageMonster = new RampageMonster(100.0, 4, 5, this);
+    connect(rampageMonster, &Monster::monsterKilled, this, [this, rampageMonster](int gold) {
+        goldCount += gold; // 增加金币数
+        goldLabel->setText("金币: " + QString::number(goldCount)); // 更新显示
+        removeMonster(rampageMonster); // 移除死亡的怪物
+    });
+    scene->addItem(rampageMonster);
+    allMonsters.append(rampageMonster);
+
     // 血量，速度，金币
-    Monster *monster = new Monster(100.0, 5, 10);
-
-    // // 处理走到边界外的怪物
-    // if (monster->get_x() == 650){
-    //     removeMonster(monster);
-    // }
-
+    Monster *monster = new Monster(100.0, 7, 10);
     //这里接到信号了
     connect(monster, &Monster::monsterKilled, this, [this, monster](int gold) {
         goldCount += gold; // 增加金币数
         goldLabel->setText("金币: " + QString::number(goldCount)); // 更新显示
         removeMonster(monster); // 移除死亡的怪物
     });
-
     scene->addItem(monster);
     allMonsters.append(monster); // 将怪物添加到怪物列表
 }
@@ -141,8 +145,9 @@ bool MainWindow::isInRange(tower1* tower, Monster* monster) {
     // 获取塔和怪物的坐标
     int towerX = tower->getCoor().x;
     int towerY = tower->getCoor().y;
-    int monsterX = monster->get_x();
-    int monsterY = monster->get_y();
+    // 实际坐标在左上角，中心判定添加一个偏移
+    int monsterX = monster->get_x() + 25; // 加半宽
+    int monsterY = monster->get_y() + 35; // 加半长
 
     // 计算塔和怪物之间的距离
     int deltaX = towerX - monsterX;
@@ -157,4 +162,5 @@ bool MainWindow::isInRange(tower1* tower, Monster* monster) {
 void MainWindow::removeMonster(Monster* monster) {
     allMonsters.removeOne(monster); // 从怪物列表中移除
     scene->removeItem(monster); // 从场景中移除
+    delete monster;
 }
